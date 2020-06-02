@@ -570,6 +570,7 @@ export class PostgresDriver implements Driver {
         if (!parameters || !Object.keys(parameters).length)
             return [sql, builtParameters];
 
+        console.log(parameters)
         const keys = Object.keys(parameters).map(parameter => "(:(\\.\\.\\.)?" + parameter + "\\b)").join("|");
         sql = sql.replace(new RegExp(keys, "g"), (key: string): string => {
             let value: any;
@@ -577,8 +578,10 @@ export class PostgresDriver implements Driver {
             if (key.substr(0, 4) === ":...") {
                 isArray = true;
                 value = parameters[key.substr(4)];
+                console.log("Value is array: ", value)
             } else {
                 value = parameters[key.substr(1)];
+                console.log("Value is single: ", value)
             }
 
             if (isArray) {
@@ -595,6 +598,8 @@ export class PostgresDriver implements Driver {
                 return "$" + builtParameters.length;
             }
         }); // todo: make replace only in value statements, otherwise problems
+        console.log("escaped sql: ", sql)
+        console.log("builtParameters: ", builtParameters)
         return [sql, builtParameters];
     }
 
